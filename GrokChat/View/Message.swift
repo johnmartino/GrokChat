@@ -13,7 +13,7 @@ enum MessageType {
     
     var backgroundColor: Color {
         switch self {
-        case .user: return Color(.systemGray6)
+        case .user: return Color(.systemGray5)
         case .system: return Color(.systemBackground)
         }
     }

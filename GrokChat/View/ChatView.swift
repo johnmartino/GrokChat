@@ -33,6 +33,7 @@ struct ChatView: View {
             
             InputField(isQuerying: $service.busy) { message in
                 Task {
+                    guard !message.isEmpty else { return }
                     if !service.responseMessage.isEmpty {
                         conversation.messages.append(Message(text: service.responseMessage, type: .system))
                     }
@@ -68,9 +69,16 @@ struct ChatView: View {
                                     .frame(maxWidth: .infinity, alignment: .leading)
                             }
                             Rectangle()
-                                .foregroundStyle(.background)
+                                .foregroundStyle(.clear)
                                 .frame(height: 1)
                                 .id(bottomID)
+                                .onScrollVisibilityChange { isVisible in
+                                    if isVisible {
+                                        withAnimation {
+                                            pauseScrolling = false
+                                        }
+                                    }
+                                }
                         }
                     }
                     .frame(minHeight: proxy.size.height)

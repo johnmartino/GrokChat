@@ -33,11 +33,11 @@ struct InputField: View {
                 }
             } label: {
                 Image(systemName: "arrow.up")
-                    .tint(.white)
+                    .tint(Color(.systemBackground))
                     .padding(8)
                     .background {
                         Circle()
-                            .foregroundStyle(isQuerying ? .gray : .black)
+                            .foregroundStyle(isQuerying ? .gray : .primary)
                     }
                     .padding(8)
             }

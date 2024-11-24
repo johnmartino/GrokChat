@@ -17,13 +17,14 @@ struct MessageView: View {
             message.type.icon?
                 .resizable()
                 .renderingMode(.template)
+                .foregroundStyle(.primary)
                 .frame(width: 16, height: 16)
                 .padding(8)
                 .background {
                     Circle()
                         .stroke(lineWidth: 1)
+                        .foregroundStyle(.secondary)
                 }
-                .foregroundStyle(.secondary)
             Text(message.text.trimmingCharacters(in: .whitespacesAndNewlines).markdown)
         }
         .foregroundStyle(.primary)
