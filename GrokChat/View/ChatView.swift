@@ -10,9 +10,11 @@ import SwiftUI
 struct ChatView: View {
     @Bindable private var service = GrokService()
     @Bindable private var conversation = Conversation()
-    @State private var bottomID = UUID()
     
+    private let bottomID = UUID()
     private let systemMessage = "You are Grok, my personal assistant."
+    
+    @State private var pauseScrolling = false
     
     var body: some View {
         NavigationStack {
@@ -24,7 +26,10 @@ struct ChatView: View {
     
     private var contentView: some View {
         VStack {
-            conversationView
+            ZStack {
+                conversationView
+                moreButton
+            }
             
             InputField(isQuerying: $service.busy) { message in
                 Task {
@@ -73,7 +78,41 @@ struct ChatView: View {
                 .scrollIndicators(.hidden)
                 .scrollDismissesKeyboard(.interactively)
                 .onChange(of: service.responseMessage) {
-                    reader.scrollTo(bottomID, anchor: .bottom)
+                    if !pauseScrolling {
+                        reader.scrollTo(bottomID, anchor: .bottom)
+                    }
+                }
+                .onChange(of: pauseScrolling) {
+                    if !pauseScrolling {
+                        reader.scrollTo(bottomID, anchor: .bottom)
+                    }
+                }
+                .onTapGesture {
+                    pauseScrolling = true
+                }
+                .onLongPressGesture {
+                    pauseScrolling = true
+                }
+            }
+        }
+    }
+    
+    @ViewBuilder private var moreButton: some View {
+        if pauseScrolling {
+            VStack {
+                Spacer()
+                
+                Button {
+                    pauseScrolling = false
+                } label: {
+                    Image(systemName: "arrow.down")
+                        .imageScale(.large)
+                        .font(.headline)
+                        .tint(.primary)
+                        .padding()
+                }
+                .background {
+                    Circle().foregroundStyle(Color(.systemGray6))
                 }
             }
         }

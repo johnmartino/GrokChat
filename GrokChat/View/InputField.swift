@@ -21,14 +21,9 @@ struct InputField: View {
                 .foregroundStyle(isQuerying ? .secondary : .primary)
                 .focused($focus)
                 .lineLimit(3)
-                .padding()
+                .padding(.horizontal)
+                .padding(.vertical, 8)
                 .submitLabel(.return)
-                .overlay {
-                    RoundedRectangle(cornerRadius: 20)
-                        .stroke(Color.secondary, lineWidth: 1)
-                }
-                .padding([.horizontal, .bottom])
-                .disabled(isQuerying)
             
             Button {
                 action(message)
@@ -37,17 +32,23 @@ struct InputField: View {
                     message = ""
                 }
             } label: {
-                Image(systemName: "paperplane.fill")
+                Image(systemName: "arrow.up")
                     .tint(.white)
-                    .padding()
+                    .padding(8)
                     .background {
                         Circle()
                             .foregroundStyle(isQuerying ? .gray : .black)
                     }
-                    .padding([.trailing, .bottom])
+                    .padding(8)
             }
             .disabled(isQuerying)
         }
+        .overlay {
+            RoundedRectangle(cornerRadius: 20)
+                .stroke(Color.secondary, lineWidth: 1)
+        }
+        .padding([.horizontal, .bottom])
+        .disabled(isQuerying)
     }
 }
 
