@@ -22,17 +22,17 @@
                                 <nil key="highlightedColor"/>
                             </label>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" image="grok" translatesAutoresizingMaskIntoConstraints="NO" id="0Tn-Ks-sdR">
-                                <rect key="frame" x="0.0" y="-207" width="393" height="1586"/>
+                                <rect key="frame" x="0.0" y="-207" width="393" height="1595"/>
                                 <color key="backgroundColor" red="0.26051741839999998" green="0.2605243921" blue="0.260520637" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                             </imageView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="Bcu-3y-fUS"/>
                         <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
-                            <constraint firstItem="0Tn-Ks-sdR" firstAttribute="bottom" secondItem="Bcu-3y-fUS" secondAttribute="bottom" constant="561" id="36o-jd-hBF"/>
+                            <constraint firstItem="0Tn-Ks-sdR" firstAttribute="bottom" secondItem="Bcu-3y-fUS" secondAttribute="bottom" constant="570" id="36o-jd-hBF"/>
                             <constraint firstItem="Bcu-3y-fUS" firstAttribute="centerX" secondItem="obG-Y5-kRd" secondAttribute="centerX" id="5cz-MP-9tL"/>
                             <constraint firstItem="Bcu-3y-fUS" firstAttribute="trailing" secondItem="0Tn-Ks-sdR" secondAttribute="trailing" id="R9o-LQ-e63"/>
-                            <constraint firstItem="obG-Y5-kRd" firstAttribute="leading" secondItem="Bcu-3y-fUS" secondAttribute="leading" constant="20" symbolic="YES" id="SfN-ll-jLj"/>
+                            <constraint firstItem="obG-Y5-kRd" firstAttribute="leading" secondItem="Bcu-3y-fUS" secondAttribute="leading" symbolic="YES" id="SfN-ll-jLj"/>
                             <constraint firstAttribute="bottom" secondItem="obG-Y5-kRd" secondAttribute="bottom" constant="20" id="Y44-ml-fuU"/>
                             <constraint firstItem="Bcu-3y-fUS" firstAttribute="top" secondItem="0Tn-Ks-sdR" secondAttribute="top" constant="266" id="aUq-1V-cS3"/>
                             <constraint firstItem="0Tn-Ks-sdR" firstAttribute="leading" secondItem="Bcu-3y-fUS" secondAttribute="leading" id="dN3-sZ-WKA"/>
