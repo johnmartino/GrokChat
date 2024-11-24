@@ -44,7 +44,7 @@ struct InputField: View {
             .disabled(isQuerying)
         }
         .overlay {
-            RoundedRectangle(cornerRadius: 20)
+            RoundedRectangle(cornerRadius: 32)
                 .stroke(Color.secondary, lineWidth: 1)
         }
         .padding([.horizontal, .bottom])
