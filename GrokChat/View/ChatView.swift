@@ -32,6 +32,8 @@ struct ChatView: View {
                         conversation.messages.append(Message(text: service.responseMessage, type: .system))
                     }
                     conversation.messages.append(Message(text: message, type: .user))
+                    let generator = UINotificationFeedbackGenerator()
+                    generator.notificationOccurred(.success)
                     try? await service.query(system: systemMessage, user: message)
                 }
             }
@@ -54,7 +56,6 @@ struct ChatView: View {
                             Spacer()
                             ForEach(conversation.messages) { message in
                                 MessageView(message: message)
-                                    .frame(maxWidth: .infinity, alignment: message.type.alignment)
                             }
                             
                             if !service.responseMessage.isEmpty {

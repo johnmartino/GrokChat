@@ -12,8 +12,13 @@ class GrokService {
     var responseMessage = ""
     var busy = false
     
+    private let hapticGenerator = UINotificationFeedbackGenerator()
+    
     @MainActor func query(system: String? = nil, user: String) async throws {
-        guard !busy else { throw URLError(.callIsActive) }
+        guard !busy else {
+            hapticGenerator.notificationOccurred(.error)
+            throw URLError(.callIsActive)
+        }
         responseMessage = ""
         
         let request = try await queryRequest(system: system, user: user)
@@ -23,6 +28,7 @@ class GrokService {
             guard let message = try? parse(line) else { continue }
             responseMessage += message
         }
+        hapticGenerator.notificationOccurred(.success)
     }
     
     private func queryRequest(system: String? = nil, user: String) async throws -> URLRequest {

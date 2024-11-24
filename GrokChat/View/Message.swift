@@ -24,6 +24,12 @@ enum MessageType {
         case .system: return .leading
         }
     }
+    
+    @ViewBuilder var icon: Image? {
+        if self == .system {
+            Image(.logo)
+        }
+    }
 }
 
 struct Message: Identifiable {
