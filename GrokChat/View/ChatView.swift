@@ -14,7 +14,9 @@ struct ChatView: View {
     private let bottomID = UUID()
     private let systemMessage = "You are Grok, my personal assistant."
     
+    @State private var scrollID = UUID()
     @State private var pauseScrolling = false
+    @State private var showDownButton = false
     
     var body: some View {
         NavigationStack {
@@ -74,10 +76,8 @@ struct ChatView: View {
                                 .frame(height: 1)
                                 .id(bottomID)
                                 .onScrollVisibilityChange { isVisible in
-                                    if isVisible {
-                                        withAnimation {
-                                            pauseScrolling = false
-                                        }
+                                    withAnimation {
+                                        showDownButton = !isVisible
                                     }
                                 }
                         }
@@ -91,12 +91,17 @@ struct ChatView: View {
                         reader.scrollTo(bottomID, anchor: .bottom)
                     }
                 }
-                .onChange(of: pauseScrolling) {
+                .onChange(of: scrollID) {
                     if !pauseScrolling {
-                        reader.scrollTo(bottomID, anchor: .bottom)
+                        withAnimation {                        
+                            reader.scrollTo(bottomID, anchor: .bottom)
+                        }
                     }
                 }
                 .onTapGesture {
+                    pauseScrolling = true
+                }
+                .onLongPressGesture {
                     pauseScrolling = true
                 }
             }
@@ -104,15 +109,16 @@ struct ChatView: View {
     }
     
     @ViewBuilder private var moreButton: some View {
-        if pauseScrolling {
+        if showDownButton {
             VStack {
                 Spacer()
                 
                 Button {
                     pauseScrolling = false
+                    scrollID = UUID()
                 } label: {
                     Image(systemName: "arrow.down")
-                        .imageScale(.large)
+                        .imageScale(.small)
                         .font(.headline)
                         .tint(.primary)
                         .padding()
