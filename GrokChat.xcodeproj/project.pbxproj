@@ -7,7 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		DF8827F42CF40BFF007EF6E9 /* Parma in Frameworks */ = {isa = PBXBuildFile; productRef = DF8827F32CF40BFF007EF6E9 /* Parma */; };
+		DF8827FD2CF41618007EF6E9 /* MarkdownUI in Frameworks */ = {isa = PBXBuildFile; productRef = DF8827FC2CF41618007EF6E9 /* MarkdownUI */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -27,7 +27,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				DF8827F42CF40BFF007EF6E9 /* Parma in Frameworks */,
+				DF8827FD2CF41618007EF6E9 /* MarkdownUI in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -70,7 +70,7 @@
 			);
 			name = GrokChat;
 			packageProductDependencies = (
-				DF8827F32CF40BFF007EF6E9 /* Parma */,
+				DF8827FC2CF41618007EF6E9 /* MarkdownUI */,
 			);
 			productName = GrokChat;
 			productReference = DFC5F3162CF36BCC0019ED68 /* GrokChat.app */;
@@ -101,7 +101,7 @@
 			mainGroup = DFC5F30D2CF36BCC0019ED68;
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
-				DF8827F22CF40BFF007EF6E9 /* XCRemoteSwiftPackageReference "Parma" */,
+				DF8827FB2CF41618007EF6E9 /* XCRemoteSwiftPackageReference "swift-markdown-ui" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = DFC5F3172CF36BCC0019ED68 /* Products */;
@@ -339,21 +339,21 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		DF8827F22CF40BFF007EF6E9 /* XCRemoteSwiftPackageReference "Parma" */ = {
+		DF8827FB2CF41618007EF6E9 /* XCRemoteSwiftPackageReference "swift-markdown-ui" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/dasautoooo/Parma.git";
+			repositoryURL = "https://github.com/gonzalezreal/swift-markdown-ui";
 			requirement = {
-				branch = main;
-				kind = branch;
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.4.1;
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		DF8827F32CF40BFF007EF6E9 /* Parma */ = {
+		DF8827FC2CF41618007EF6E9 /* MarkdownUI */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = DF8827F22CF40BFF007EF6E9 /* XCRemoteSwiftPackageReference "Parma" */;
-			productName = Parma;
+			package = DF8827FB2CF41618007EF6E9 /* XCRemoteSwiftPackageReference "swift-markdown-ui" */;
+			productName = MarkdownUI;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};
