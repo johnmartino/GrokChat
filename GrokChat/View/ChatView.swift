@@ -99,9 +99,6 @@ struct ChatView: View {
                 .onTapGesture {
                     pauseScrolling = true
                 }
-                .onLongPressGesture {
-                    pauseScrolling = true
-                }
             }
         }
     }
