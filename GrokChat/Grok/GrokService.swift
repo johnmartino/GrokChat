@@ -24,6 +24,7 @@ class GrokService {
         }
         responseMessage = ""
         
+        busy = true
         let request = try await queryRequest(system: system, user: user)
         let (stream, _) = try await URLSession.shared.bytes(for: request)
         
@@ -32,6 +33,7 @@ class GrokService {
             responseMessage += message
         }
         hapticGenerator.notificationOccurred(.success)
+        busy = false
     }
     
     private func queryRequest(system: String? = nil, user: String) async throws -> URLRequest {

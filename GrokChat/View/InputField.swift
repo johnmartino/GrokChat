@@ -37,7 +37,7 @@ struct InputField: View {
                     .padding(8)
                     .background {
                         Circle()
-                            .foregroundStyle(isQuerying ? .gray : .primary)
+                            .foregroundStyle(isQuerying ? Color(.systemGray6) : .primary)
                     }
                     .padding(8)
             }
