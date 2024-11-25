@@ -58,6 +58,7 @@ struct ChatView: View {
                                 .foregroundStyle(.secondary)
                                 .aspectRatio(contentMode: .fit)
                                 .padding(32)
+                                .opacity(0.25)
                         } else {
                             Spacer()
                             ForEach(conversation.messages) { message in
