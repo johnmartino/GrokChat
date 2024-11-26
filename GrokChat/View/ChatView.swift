@@ -93,7 +93,7 @@ struct ChatView: View {
                 }
                 .onChange(of: scrollID) {
                     if !pauseScrolling {
-                        withAnimation {                        
+                        withAnimation {
                             reader.scrollTo(bottomID, anchor: .bottom)
                         }
                     }
@@ -124,7 +124,7 @@ struct ChatView: View {
                         .padding()
                 }
                 .background {
-                    Circle().foregroundStyle(Color(.systemGray6))
+                    Circle().foregroundStyle(.ultraThinMaterial)
                 }
             }
         }
