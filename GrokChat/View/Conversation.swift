@@ -10,4 +10,8 @@ import SwiftUI
 @Observable
 class Conversation {
     var messages = [Message]()
+    
+    func add(text: String, type: MessageType) {
+        messages.append(Message(text: text, type: type))
+    }
 }

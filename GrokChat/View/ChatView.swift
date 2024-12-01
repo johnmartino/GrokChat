@@ -37,9 +37,9 @@ struct ChatView: View {
                 Task {
                     guard !message.isEmpty else { return }
                     if !service.responseMessage.isEmpty {
-                        conversation.messages.append(Message(text: service.responseMessage, type: .system))
+                        conversation.add(text: service.responseMessage, type: .system)
                     }
-                    conversation.messages.append(Message(text: message, type: .user))
+                    conversation.add(text: message, type: .user)
                     let generator = UINotificationFeedbackGenerator()
                     generator.notificationOccurred(.success)
                     try? await service.query(system: systemMessage, user: message)
