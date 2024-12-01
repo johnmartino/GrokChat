@@ -6,12 +6,16 @@
 //
 
 import SwiftUI
+import SwiftData
 
 @Observable
 class Conversation {
     var messages = [Message]()
     
-    func add(text: String, type: MessageType) {
-        messages.append(Message(text: text, type: type))
+    func add(text: String, type: MessageType, context: ModelContext) {
+        let message = Message(id: messages.count, text: text, type: type)
+        messages.append(message)
+        context.insert(message)
+        try? context.save()
     }
 }

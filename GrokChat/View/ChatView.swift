@@ -6,10 +6,13 @@
 //
 
 import SwiftUI
+import SwiftData
 
 struct ChatView: View {
+    @Environment(\.modelContext) var context
     @Bindable private var service = GrokService()
     @Bindable private var conversation = Conversation()
+    @Query(sort: \Message.id) var messages: [Message]
     
     private let bottomID = UUID()
     private let systemMessage = "You are Grok, my personal assistant."
@@ -23,6 +26,20 @@ struct ChatView: View {
             contentView
                 .navigationTitle("Grok")
                 .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    if !conversation.messages.isEmpty {
+                        Button {
+                            for message in messages {
+                                context.delete(message)
+                                conversation.messages.removeAll()
+                                showDownButton = false
+                            }
+                        } label: {
+                            Image(systemName: "square.and.pencil")
+                        }
+                        .foregroundStyle(.primary)
+                    }
+                }
         }
     }
     
@@ -36,10 +53,7 @@ struct ChatView: View {
             InputField(isQuerying: $service.busy) { message in
                 Task {
                     guard !message.isEmpty else { return }
-                    if !service.responseMessage.isEmpty {
-                        conversation.add(text: service.responseMessage, type: .system)
-                    }
-                    conversation.add(text: message, type: .user)
+                    conversation.add(text: message, type: .user, context: context)
                     let generator = UINotificationFeedbackGenerator()
                     generator.notificationOccurred(.success)
                     try? await service.query(system: systemMessage, user: message)
@@ -68,7 +82,7 @@ struct ChatView: View {
                             }
                             
                             if !service.responseMessage.isEmpty {
-                                MessageView(message: Message(text: service.responseMessage, type: .system))
+                                MessageView(message: Message(id: -1, text: service.responseMessage, type: .system))
                                     .frame(maxWidth: .infinity, alignment: .leading)
                             }
                             Rectangle()
@@ -98,11 +112,20 @@ struct ChatView: View {
                         }
                     }
                 }
+                .onChange(of: service.busy) {
+                    if !service.busy && !service.responseMessage.isEmpty {
+                        conversation.add(text: service.responseMessage, type: .system, context: context)
+                        service.responseMessage = ""
+                    }
+                }
                 .onTapGesture {
                     pauseScrolling = true
                 }
                 .onLongPressGesture {
                     pauseScrolling = true
+                }
+                .task {
+                    conversation.messages = messages
                 }
             }
         }
