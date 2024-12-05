@@ -79,6 +79,9 @@ struct ChatView: View {
                             Spacer()
                             ForEach(conversation.messages) { message in
                                 MessageView(message: message)
+                                    .contextMenu {
+                                        ShareLink("Share", item: message.text)
+                                    }
                             }
                             
                             if !service.responseMessage.isEmpty {
