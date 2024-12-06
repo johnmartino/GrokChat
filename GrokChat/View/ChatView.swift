@@ -80,7 +80,7 @@ struct ChatView: View {
                             ForEach(conversation.messages) { message in
                                 MessageView(message: message)
                                     .contextMenu {
-                                        ShareLink("Share", item: message.text)
+                                        ShareLink("Share", item: message.text) 
                                     }
                             }
                             
