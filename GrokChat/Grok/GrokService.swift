@@ -36,8 +36,48 @@ class GrokService {
         busy = false
     }
     
+    @MainActor func query(text: String, images: [UIImage]) async throws {
+        guard !busy else {
+            hapticGenerator.notificationOccurred(.error)
+            throw URLError(.callIsActive)
+        }
+        responseMessage = ""
+        
+        busy = true
+        let request = try await queryRequest(text: text, images: images)
+        let (stream, _) = try await URLSession.shared.bytes(for: request)
+        
+        for try await line in stream.lines {
+            guard let message = try? parse(line) else { continue }
+            responseMessage += message
+        }
+        hapticGenerator.notificationOccurred(.success)
+        busy = false
+    }
+    
+    @MainActor func querySingle(text: String, images: [UIImage]) async throws {
+        let request = try await queryRequest(text: text, images: images)
+        let (data, _) = try await URLSession.shared.data(for: request)
+        let json = try JSONDecoder().decode(GrokSingleResponse.self, from: data)
+        responseMessage = json.choices.first?.message.content ?? ""
+    }
+    
     private func queryRequest(system: String? = nil, user: String) async throws -> URLRequest {
         let grokRequest = GrokRequest(userMessage: user, systemMessage: system)
+        
+        guard let url = URL(string: "https://api.x.ai/v1/chat/completions") else { throw URLError(.badURL) }
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.httpBody = try JSONEncoder().encode(grokRequest)
+        request.allHTTPHeaderFields = [
+            "Content-Type": "application/json",
+            "Authorization": "Bearer \(jAPIKey)"
+        ]
+        return request
+    }
+    
+    private func queryRequest(text: String, images: [UIImage]) async throws -> URLRequest {
+        let grokRequest = GrockImageRequest(text: text, images: images)
         
         guard let url = URL(string: "https://api.x.ai/v1/chat/completions") else { throw URLError(.badURL) }
         var request = URLRequest(url: url)

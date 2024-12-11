@@ -26,6 +26,7 @@ struct ChatView: View {
             contentView
                 .navigationTitle("Grok")
                 .navigationBarTitleDisplayMode(.inline)
+                .background(.screen)
                 .toolbar {
                     if !conversation.messages.isEmpty {
                         Button {
@@ -50,13 +51,18 @@ struct ChatView: View {
                 moreButton
             }
             
-            InputField(isQuerying: $service.busy) { message in
+            InputField(isQuerying: $service.busy) { message, images in
                 Task {
                     guard !message.isEmpty else { return }
-                    conversation.add(text: message, type: .user, context: context)
+                    conversation.add(text: message, images: images, type: .user, context: context)
                     let generator = UINotificationFeedbackGenerator()
                     generator.notificationOccurred(.success)
-                    try? await service.query(system: systemMessage, user: message)
+                    
+                    if images.isEmpty {
+                        try? await service.query(system: systemMessage, user: message)
+                    } else {
+                        try? await service.query(text: message, images: images)
+                    }
                 }
             }
         }
@@ -85,7 +91,7 @@ struct ChatView: View {
                             }
                             
                             if !service.responseMessage.isEmpty {
-                                MessageView(message: Message(id: -1, text: service.responseMessage, type: .system))
+                                MessageView(message: Message(id: -1, text: service.responseMessage, images: nil, type: .system))
                                     .frame(maxWidth: .infinity, alignment: .leading)
                             }
                             Rectangle()
@@ -117,7 +123,7 @@ struct ChatView: View {
                 }
                 .onChange(of: service.busy) {
                     if !service.busy && !service.responseMessage.isEmpty {
-                        conversation.add(text: service.responseMessage, type: .system, context: context)
+                        conversation.add(text: service.responseMessage, images: nil, type: .system, context: context)
                         service.responseMessage = ""
                     }
                 }

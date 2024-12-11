@@ -12,8 +12,8 @@ import SwiftData
 class Conversation {
     var messages = [Message]()
     
-    func add(text: String, type: MessageType, context: ModelContext) {
-        let message = Message(id: messages.count, text: text, type: type)
+    func add(text: String, images: [UIImage]?, type: MessageType, context: ModelContext) {
+        let message = Message(id: messages.count, text: text, images: images, type: type)
         messages.append(message)
         context.insert(message)
         try? context.save()
