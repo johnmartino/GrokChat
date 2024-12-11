@@ -18,6 +18,7 @@ struct InputField: View {
     @State private var showImagePicker = false
     @State private var photoItems = [PhotosPickerItem]()
     @State private var selectedImages = [UIImage]()
+    @State private var selectedImage: UIImage?
     
     var body: some View {
         VStack(spacing: 0) {
@@ -36,6 +37,13 @@ struct InputField: View {
                                 } label: {
                                     Label("Delete", systemImage: "trash")
                                 }
+                            }
+                            .onTapGesture {
+                                selectedImage = selectedImages[index]
+                            }
+                            .fullScreenCover(item: $selectedImage) { image in
+                                ImageView(uiImage: image)
+                                    .ignoresSafeArea()
                             }
                     }
                 }
@@ -113,7 +121,7 @@ struct InputField: View {
     
     @MainActor private func extractImage(_ photoItem: PhotosPickerItem) async -> UIImage? {
         guard let imageData = try? await photoItem.loadTransferable(type: Data.self) else { return nil }
-        return await UIImage(data: imageData)?.byPreparingThumbnail(ofSize: CGSize(width: 300, height: 300))
+        return UIImage(data: imageData)
     }
 }
 

@@ -14,6 +14,7 @@ struct MessageView: View {
     private let radius: CGFloat = 16
     
     @State private var text = ""
+    @State private var selectedImage: UIImage?
     
     var body: some View {
         VStack(alignment: .trailing) {
@@ -43,13 +44,16 @@ struct MessageView: View {
             }
             
             if let images = message.images, !images.isEmpty {
-                HStack {
+                HStack(alignment: .top) {
                     ForEach(images, id: \.self) { data in
                         if let image = UIImage(data: data) {
                             Image(uiImage: image)
                                 .resizable()
-                                .frame(width: 100, height: 100)
+                                .frame(width: 120, height: 120)
                                 .clipShape(.rect(cornerRadius: radius))
+                                .onTapGesture {
+                                    selectedImage = image
+                                }
                         }
                     }
                 }
@@ -57,6 +61,10 @@ struct MessageView: View {
         }
         .padding(.horizontal)
         .frame(maxWidth: .infinity, alignment: message.type.alignment)
+        .fullScreenCover(item: $selectedImage) { image in
+            ImageView(uiImage: image)
+                .ignoresSafeArea()
+        }
     }
 }
 
