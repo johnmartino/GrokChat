@@ -156,9 +156,17 @@ struct ChatView: View {
                         .padding()
                 }
                 .background {
-                    Circle().foregroundStyle(.ultraThinMaterial)
+                    Circle()
+                        .foregroundStyle(.background)
+                }
+                .overlay {
+                    Circle()
+                        .stroke(lineWidth: 1)
+                        .foregroundStyle(.primary)
+                        .opacity(0.1)
                 }
             }
+            .padding(.bottom, 4)
         }
     }
 }
