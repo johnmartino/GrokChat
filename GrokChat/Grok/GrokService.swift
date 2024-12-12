@@ -17,7 +17,7 @@ class GrokService {
     private let hAPIKey = "xai-g5zVTwq8obqbI3vbHDPcX7Aawg9xs6CftcFKxdjUiwjihJE95ecD8pvTbgaJJczYzkTQqnDcPeRVI72L"
     private let jAPIKey = "xai-i8I7DeH2ebfAGdS8X0cnfMVBiS4RknqHekTJQBTxNWNEXiLh5r3bjZOLKFF6nZ20uou7eh0ycOWD8bmZ"
     
-    @MainActor func query(system: String? = nil, user: String) async throws {
+    @MainActor func query(system: String? = nil, user: String, history: [Message]) async throws {
         guard !busy else {
             hapticGenerator.notificationOccurred(.error)
             throw URLError(.callIsActive)
@@ -25,7 +25,7 @@ class GrokService {
         responseMessage = ""
         
         busy = true
-        let request = try await queryRequest(system: system, user: user)
+        let request = try await queryRequest(system: system, user: user, history: history)
         let (stream, _) = try await URLSession.shared.bytes(for: request)
         
         for try await line in stream.lines {
@@ -62,8 +62,8 @@ class GrokService {
         responseMessage = json.choices.first?.message.content ?? ""
     }
     
-    private func queryRequest(system: String? = nil, user: String) async throws -> URLRequest {
-        let grokRequest = GrokRequest(userMessage: user, systemMessage: system)
+    private func queryRequest(system: String? = nil, user: String, history: [Message]?) async throws -> URLRequest {
+        let grokRequest = GrokRequest(userMessage: user, systemMessage: system, history: history)
         
         guard let url = URL(string: "https://api.x.ai/v1/chat/completions") else { throw URLError(.badURL) }
         var request = URLRequest(url: url)
@@ -77,7 +77,7 @@ class GrokService {
     }
     
     private func queryRequest(text: String, images: [UIImage]) async throws -> URLRequest {
-        let grokRequest = GrockImageRequest(text: text, images: images)
+        let grokRequest = GrokImageRequest(text: text, images: images)
         
         guard let url = URL(string: "https://api.x.ai/v1/chat/completions") else { throw URLError(.badURL) }
         var request = URLRequest(url: url)

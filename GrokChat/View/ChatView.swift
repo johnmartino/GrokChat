@@ -45,7 +45,7 @@ struct ChatView: View {
     }
     
     private var contentView: some View {
-        VStack {
+        VStack(spacing: 0) {
             ZStack {
                 conversationView
                 moreButton
@@ -59,7 +59,7 @@ struct ChatView: View {
                     generator.notificationOccurred(.success)
                     
                     if images.isEmpty {
-                        try? await service.query(system: systemMessage, user: message)
+                        try? await service.query(system: systemMessage, user: message, history: conversation.messages)
                     } else {
                         try? await service.query(text: message, images: images)
                     }

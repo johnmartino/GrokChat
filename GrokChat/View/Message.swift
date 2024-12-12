@@ -31,6 +31,13 @@ enum MessageType: Codable {
             Image(.logo)
         }
     }
+    
+    var value: String {
+        switch self {
+        case .user: return "user"
+        case .system: return "assistant"
+        }
+    }
 }
 
 @Model

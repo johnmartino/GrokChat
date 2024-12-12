@@ -6,6 +6,7 @@
 //
 
 import Foundation
+import SwiftUI
 
 struct GrokMessage: Codable {
     let role: String
@@ -18,16 +19,24 @@ struct GrokRequest: Codable {
     let stream: Bool
     let temperature: Double
     
-    init(userMessage: String, systemMessage: String?) {
+    init(userMessage: String, systemMessage: String?, history: [Message]?) {
         self.model = "grok-beta"
         self.stream = true
         self.temperature = 0
         
         var messages = [GrokMessage]()
-        messages.append(GrokMessage(role: "user", content: userMessage))
         if let systemMessage {
             messages.append(GrokMessage(role: "system", content: systemMessage))
         }
+        
+        if let history {
+            for item in history {
+                let grokMessage = GrokMessage(role: item.type.value, content: item.text)
+                messages.append(grokMessage)
+            }
+        }
+        
+        messages.append(GrokMessage(role: "user", content: userMessage))
         self.messages = messages
     }
 }

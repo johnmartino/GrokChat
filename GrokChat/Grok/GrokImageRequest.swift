@@ -38,9 +38,21 @@ struct GrokImageContent: Codable {
 struct GrokImageMessage: Codable {
     let role: String
     let content: [GrokImageContent]
+    
+    init(role: String, text: String, images: [UIImage]) {
+        self.role = role
+        var content = [GrokImageContent]()
+        for image in images {
+            if let base64Image = image.jpegData(compressionQuality: 0.5)?.base64EncodedString() {
+                content.append(GrokImageContent(base64: base64Image))
+            }
+        }
+        content.append(GrokImageContent(text: text))
+        self.content = content
+    }
 }
 
-struct GrockImageRequest: Codable {
+struct GrokImageRequest: Codable {
     let messages: [GrokImageMessage]
     let model: String
     let stream: Bool
@@ -50,14 +62,6 @@ struct GrockImageRequest: Codable {
         self.model = "grok-vision-beta"
         self.stream = stream
         self.temperature = 0.01
-        
-        var content = [GrokImageContent]()
-        for image in images {
-            if let base64Image = image.jpegData(compressionQuality: 0.5)?.base64EncodedString() {
-                content.append(GrokImageContent(base64: base64Image))
-            }
-        }
-        content.append(GrokImageContent(text: text))
-        self.messages = [GrokImageMessage(role: "user", content: content)]
+        self.messages = [GrokImageMessage(role: "user", text: text, images: images)]
     }
 }
