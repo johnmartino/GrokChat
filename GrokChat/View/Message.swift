@@ -15,7 +15,7 @@ enum MessageType: Codable {
     var backgroundColor: Color {
         switch self {
         case .user: return Color(.systemGray5)
-        case .system: return .screen //Color(.systemBackground)
+        case .system: return .screen 
         }
     }
     

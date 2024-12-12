@@ -63,6 +63,7 @@ struct MessageView: View {
         .frame(maxWidth: .infinity, alignment: message.type.alignment)
         .fullScreenCover(item: $selectedImage) { image in
             ImageView(uiImage: image)
+                .tint(.primary)
                 .ignoresSafeArea()
         }
     }

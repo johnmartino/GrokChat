@@ -20,37 +20,39 @@ struct InputField: View {
     @State private var selectedImages = [UIImage]()
     @State private var selectedImage: UIImage?
     
+    @StateObject private var cameraManager = CameraManager()
+    @State private var showCameraPermissionMessage = false
+    @State private var showCamera = false
+    @State private var cameraImage: UIImage?
+    
     var body: some View {
         VStack(spacing: 0) {
-            if !selectedImages.isEmpty {
-                HStack {
-                    ForEach(0 ..< selectedImages.count, id: \.self) { index in
-                        Image(uiImage: selectedImages[index])
-                            .resizable()
-                            .frame(width: 100, height: 100)
-                            .clipShape(.rect(cornerRadius: 10))
-                            .transition(.opacity)
-                            .contextMenu {
-                                Button(role: .destructive) {
-                                    selectedImages.remove(at: index)
-                                    photoItems.remove(at: index)
-                                } label: {
-                                    Label("Delete", systemImage: "trash")
-                                }
+            HStack {
+                if !selectedImages.isEmpty {
+                    HStack {
+                        ForEach(0 ..< selectedImages.count, id: \.self) { index in
+                            attachment(image: selectedImages[index]) {
+                                selectedImages.remove(at: index)
+                                photoItems.remove(at: index)
                             }
-                            .onTapGesture {
-                                selectedImage = selectedImages[index]
-                            }
-                            .fullScreenCover(item: $selectedImage) { image in
-                                ImageView(uiImage: image)
-                                    .ignoresSafeArea()
-                            }
+                        }
+                        Spacer()
                     }
                 }
-                .frame(maxWidth: .infinity, alignment: .leading)
+                
+                if let cameraImage {
+                    attachment(image: cameraImage) {
+                        self.cameraImage = nil
+                    }
+                    
+                    if selectedImages.isEmpty {
+                        Spacer()
+                    }
+                }
             }
+            .padding(.horizontal, 8)
             
-            TextField("Query Grok", text: $message, axis: .vertical)
+            TextField("Query", text: $message, axis: .vertical)
                 .multilineTextAlignment(.leading)
                 .foregroundStyle(isQuerying ? .secondary : .primary)
                 .focused($focus)
@@ -61,7 +63,14 @@ struct InputField: View {
             HStack {
                 Menu {
                     Button {
-                        
+                        Task {
+                            await cameraManager.requestPermission()
+                            if cameraManager.granted {
+                                showCamera = true
+                            } else if cameraManager.status == .denied {
+                                showCameraPermissionMessage = true
+                            }
+                        }
                     } label: {
                         Label("Take Photo", systemImage: "camera")
                     }
@@ -82,12 +91,15 @@ struct InputField: View {
                 Spacer()
                 
                 Button {
-                    action(message, selectedImages)
-                    focus = false
-                    withAnimation {
-                        message = ""
-                        photoItems.removeAll()
-                        selectedImages.removeAll()
+                    if !message.isEmpty {
+                        action(message, selectedImages)
+                        focus = false
+                        withAnimation {
+                            message = ""
+                            photoItems.removeAll()
+                            selectedImages.removeAll()
+                            cameraImage = nil
+                        }
                     }
                 } label: {
                     Image(systemName: "arrow.up")
@@ -102,10 +114,8 @@ struct InputField: View {
             .disabled(isQuerying)
         }
         .padding()
-        .overlay {
-            RoundedRectangle(cornerRadius: 32)
-                .stroke(Color.secondary, lineWidth: 1)
-        }
+        .background(Color(.systemGray5))
+        .clipShape(.rect(cornerRadius: 32))
         .padding([.horizontal, .bottom])
         .disabled(isQuerying)
         .photosPicker(isPresented: $showImagePicker, selection: $photoItems, maxSelectionCount: 3, selectionBehavior: .default, matching: .images, preferredItemEncoding: .automatic, photoLibrary: .shared())
@@ -117,11 +127,51 @@ struct InputField: View {
                 }
             }
         }
+        .alert("Unable to access the Camera", isPresented: $showCameraPermissionMessage) {
+            Button("Cancel") { }
+            Button("Settings") {
+                guard let settingsUrl = URL(string: UIApplication.openSettingsURLString) else { return }
+                if UIApplication.shared.canOpenURL(settingsUrl) {
+                    UIApplication.shared.open(settingsUrl) { success in }
+                }
+            }
+        } message: {
+            Text("To enable access, go to Settings > Privacy > Camera and turn on access for NYC 311.")
+        }
+        .fullScreenCover(isPresented: $showCamera) {
+            if cameraManager.granted {
+                CameraPickerView(selectedImage: $cameraImage)
+                    .ignoresSafeArea()
+            }
+        }
     }
     
     @MainActor private func extractImage(_ photoItem: PhotosPickerItem) async -> UIImage? {
         guard let imageData = try? await photoItem.loadTransferable(type: Data.self) else { return nil }
         return UIImage(data: imageData)
+    }
+    
+    func attachment(image: UIImage, onDelete: @escaping () -> Void) -> some View {
+        Image(uiImage: image)
+            .resizable()
+            .frame(width: 60, height: 60)
+            .clipShape(.rect(cornerRadius: 8))
+            .transition(.opacity)
+            .contextMenu {
+                Button(role: .destructive) {
+                    onDelete()
+                } label: {
+                    Label("Delete", systemImage: "trash")
+                }
+            }
+            .onTapGesture {
+                selectedImage = image
+            }
+            .fullScreenCover(item: $selectedImage) { image in
+                ImageView(uiImage: image)
+                    .tint(.primary)
+                    .ignoresSafeArea()
+            }
     }
 }
 
