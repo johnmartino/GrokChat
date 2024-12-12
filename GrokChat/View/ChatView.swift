@@ -32,9 +32,9 @@ struct ChatView: View {
                         Button {
                             for message in messages {
                                 context.delete(message)
-                                conversation.messages.removeAll()
-                                showDownButton = false
                             }
+                            conversation.messages.removeAll()
+                            showDownButton = false
                         } label: {
                             Image(systemName: "square.and.pencil")
                         }
@@ -51,18 +51,22 @@ struct ChatView: View {
                 moreButton
             }
             
-            InputField(isQuerying: $service.busy) { message, images in
-                Task {
-                    guard !message.isEmpty else { return }
-                    conversation.add(text: message, images: images, type: .user, context: context)
-                    let generator = UINotificationFeedbackGenerator()
-                    generator.notificationOccurred(.success)
-                    
-                    if images.isEmpty {
-                        try? await service.query(system: systemMessage, user: message, history: conversation.messages)
-                    } else {
-                        try? await service.query(text: message, images: images)
-                    }
+            inputField
+        }
+    }
+    
+    private var inputField: some View {
+        InputField(isQuerying: $service.busy) { message, images in
+            Task {
+                guard !message.isEmpty else { return }
+                conversation.add(text: message, images: images, type: .user, context: context)
+                let generator = UINotificationFeedbackGenerator()
+                generator.notificationOccurred(.success)
+                
+                if images.isEmpty {
+                    try? await service.query(system: systemMessage, user: message, history: conversation.messages)
+                } else {
+                    try? await service.query(text: message, images: images)
                 }
             }
         }
@@ -108,7 +112,7 @@ struct ChatView: View {
                     .frame(minHeight: proxy.size.height)
                 }
                 .scrollIndicators(.hidden)
-                .scrollDismissesKeyboard(.interactively)
+                .scrollDismissesKeyboard(.immediately)
                 .onChange(of: service.responseMessage) {
                     if !pauseScrolling {
                         reader.scrollTo(bottomID, anchor: .bottom)

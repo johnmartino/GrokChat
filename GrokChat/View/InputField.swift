@@ -28,97 +28,48 @@ struct InputField: View {
     var body: some View {
         VStack(spacing: 0) {
             HStack {
-                if !selectedImages.isEmpty {
-                    HStack {
-                        ForEach(0 ..< selectedImages.count, id: \.self) { index in
-                            attachment(image: selectedImages[index]) {
-                                selectedImages.remove(at: index)
-                                photoItems.remove(at: index)
+                Group {
+                    if !selectedImages.isEmpty {
+                        HStack {
+                            ForEach(0 ..< selectedImages.count, id: \.self) { index in
+                                attachment(image: selectedImages[index]) {
+                                    selectedImages.remove(at: index)
+                                    photoItems.remove(at: index)
+                                }
                             }
+                            Spacer()
                         }
-                        Spacer()
-                    }
-                }
-                
-                if let cameraImage {
-                    attachment(image: cameraImage) {
-                        self.cameraImage = nil
                     }
                     
-                    if selectedImages.isEmpty {
-                        Spacer()
+                    if let cameraImage {
+                        attachment(image: cameraImage) {
+                            self.cameraImage = nil
+                        }
+                        
+                        if selectedImages.isEmpty {
+                            Spacer()
+                        }
                     }
                 }
+                .padding(.bottom, 8)
             }
-            .padding(.horizontal, 8)
             
-            TextField("Query", text: $message, axis: .vertical)
-                .multilineTextAlignment(.leading)
-                .foregroundStyle(isQuerying ? .secondary : .primary)
-                .focused($focus)
-                .padding(.horizontal, 8)
-                .padding(.vertical, 8)
-                .submitLabel(.return)
-            
+            inputField
             HStack {
-                Menu {
-                    Button {
-                        Task {
-                            await cameraManager.requestPermission()
-                            if cameraManager.granted {
-                                showCamera = true
-                            } else if cameraManager.status == .denied {
-                                showCameraPermissionMessage = true
-                            }
-                        }
-                    } label: {
-                        Label("Take Photo", systemImage: "camera")
-                    }
-                    
-                    Button {
-                        showImagePicker.toggle()
-                    } label: {
-                        Label("Attach Photos", systemImage: "photo")
-                    }
-                } label: {
-                    Image(systemName: "plus")
-                        .imageScale(.large)
-                        .font(.headline)
-                        .tint(.primary)
-                }
-                .padding(8)
-                
+                menuButton
                 Spacer()
-                
-                Button {
-                    if !message.isEmpty {
-                        action(message, selectedImages)
-                        focus = false
-                        withAnimation {
-                            message = ""
-                            photoItems.removeAll()
-                            selectedImages.removeAll()
-                            cameraImage = nil
-                        }
-                    }
-                } label: {
-                    Image(systemName: "arrow.up")
-                        .tint(Color(.systemBackground))
-                        .padding(8)
-                        .background {
-                            Circle()
-                                .foregroundStyle(isQuerying ? Color(.systemGray6) : .primary)
-                        }
-                }
+                submitButton
             }
             .disabled(isQuerying)
         }
-        .padding()
-        .background(Color(.systemGray5))
-        .clipShape(.rect(cornerRadius: 32))
+        .padding(.horizontal, 12)
+        .padding(.vertical, 8)
+        .background(Color(.systemGray6))
+        .clipShape(.rect(cornerRadius: 16))
         .padding([.horizontal, .bottom])
         .disabled(isQuerying)
         .photosPicker(isPresented: $showImagePicker, selection: $photoItems, maxSelectionCount: 3, selectionBehavior: .default, matching: .images, preferredItemEncoding: .automatic, photoLibrary: .shared())
+        .tint(.primary)
         .task(id: photoItems) {
             self.selectedImages.removeAll()
             for photoItem in photoItems {
@@ -143,6 +94,75 @@ struct InputField: View {
                 CameraPickerView(selectedImage: $cameraImage)
                     .ignoresSafeArea()
             }
+        }
+        .onChange(of: message) {
+            focus = true
+        }
+    }
+    
+    private var shouldShowFullField: Bool {
+        !selectedImages.isEmpty || !message.isEmpty
+    }
+    
+    private var inputField: some View {
+        TextField("Query", text: $message, axis: .vertical)
+            .multilineTextAlignment(.leading)
+            .foregroundStyle(isQuerying ? .secondary : .primary)
+            .focused($focus)
+            .submitLabel(.return)
+    }
+    
+    private var submitButton: some View {
+        Button {
+            if !message.isEmpty {
+                if let cameraImage {
+                    selectedImages.append(cameraImage)
+                }
+                action(message, selectedImages)
+                focus = false
+                withAnimation {
+                    message = ""
+                    photoItems.removeAll()
+                    selectedImages.removeAll()
+                    cameraImage = nil
+                }
+            }
+        } label: {
+            Image(systemName: "arrow.up")
+                .tint(Color(.systemBackground))
+                .padding(8)
+                .background {
+                    Circle()
+                        .foregroundStyle(isQuerying ? Color(.systemGray6) : .primary)
+                }
+        }
+    }
+    
+    private var menuButton: some View {
+        Menu {
+            Button {
+                Task {
+                    await cameraManager.requestPermission()
+                    if cameraManager.granted {
+                        showCamera = true
+                    } else if cameraManager.status == .denied {
+                        showCameraPermissionMessage = true
+                    }
+                }
+            } label: {
+                Label("Take Photo", systemImage: "camera")
+            }
+            
+            Button {
+                showImagePicker.toggle()
+            } label: {
+                Label("Attach Photos", systemImage: "photo")
+            }
+        } label: {
+            Image(systemName: "plus")
+                .imageScale(.large)
+                .font(.headline)
+                .tint(.primary)
         }
     }
     
