@@ -20,38 +20,68 @@ struct ChatView: View {
     @State private var scrollID = UUID()
     @State private var pauseScrolling = false
     @State private var showDownButton = false
+    @State private var showSettings = false
+    @State private var showSettingsMessage = false
     
     var body: some View {
         NavigationStack {
             contentView
-                .navigationTitle("Grok")
                 .navigationBarTitleDisplayMode(.inline)
                 .background(.screen)
+                .fullScreenCover(isPresented: $showSettings) {
+                    SettingsView(valuesStatus: $showSettingsMessage)
+                }
+                .task {
+                    let keyValue = Settings.key ?? ""
+                    let modelValue = Settings.model ?? ""
+                    showSettingsMessage = keyValue.isEmpty || modelValue.isEmpty
+                }
                 .toolbar {
-                    if !conversation.messages.isEmpty {
+                    ToolbarItem(placement: .topBarLeading) {
                         Button {
-                            for message in messages {
-                                context.delete(message)
-                            }
-                            conversation.messages.removeAll()
-                            showDownButton = false
+                            showSettings.toggle()
                         } label: {
-                            Image(systemName: "square.and.pencil")
+                            Image(systemName: "gear")
                         }
-                        .foregroundStyle(.primary)
+                        .tint(.primary)
+                    }
+                    
+                    ToolbarItem(placement: .principal) {
+                        Text("Grok")
+                            .font(.custom("Futura", size: 20, relativeTo: .headline))
+                            .fontWeight(.semibold)
+                    }
+                    
+                    if !conversation.messages.isEmpty {
+                        ToolbarItem(placement: .topBarTrailing) {
+                            Button {
+                                for message in messages {
+                                    context.delete(message)
+                                }
+                                conversation.messages.removeAll()
+                                showDownButton = false
+                            } label: {
+                                Image(systemName: "square.and.pencil")
+                            }
+                            .foregroundStyle(.primary)
+                        }
                     }
                 }
         }
     }
     
-    private var contentView: some View {
-        VStack(spacing: 0) {
-            ZStack {
-                conversationView
-                moreButton
+    @ViewBuilder private var contentView: some View {
+        if showSettingsMessage {
+            ContentUnavailableView("Settings", systemImage: "gear", description: Text("Open the Settings view and select your data model and API key."))
+        } else {
+            VStack(spacing: 0) {
+                ZStack {
+                    conversationView
+                    moreButton
+                }
+                
+                inputField
             }
-            
-            inputField
         }
     }
     
@@ -78,13 +108,17 @@ struct ChatView: View {
                 ScrollView {
                     VStack {
                         if conversation.messages.isEmpty && service.responseMessage.isEmpty {
-                            Image(.logo)
-                                .resizable()
-                                .renderingMode(.template)
-                                .foregroundStyle(.secondary)
-                                .aspectRatio(contentMode: .fit)
-                                .padding(32)
-                                .opacity(0.25)
+                            HStack {
+                                Spacer()
+                                Image(.logo)
+                                    .resizable()
+                                    .renderingMode(.template)
+                                    .foregroundStyle(.secondary)
+                                    .aspectRatio(contentMode: .fit)
+                                    .frame(width: 64, height: 64)
+                                    .opacity(0.25)
+                                Spacer()
+                            }
                         } else {
                             Spacer()
                             ForEach(conversation.messages) { message in

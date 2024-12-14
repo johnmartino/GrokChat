@@ -14,9 +14,6 @@ class GrokService {
     
     private let hapticGenerator = UINotificationFeedbackGenerator()
     
-    private let hAPIKey = "xai-g5zVTwq8obqbI3vbHDPcX7Aawg9xs6CftcFKxdjUiwjihJE95ecD8pvTbgaJJczYzkTQqnDcPeRVI72L"
-    private let jAPIKey = "xai-i8I7DeH2ebfAGdS8X0cnfMVBiS4RknqHekTJQBTxNWNEXiLh5r3bjZOLKFF6nZ20uou7eh0ycOWD8bmZ"
-    
     @MainActor func query(system: String? = nil, user: String, history: [Message]) async throws {
         guard !busy else {
             hapticGenerator.notificationOccurred(.error)
@@ -65,13 +62,15 @@ class GrokService {
     private func queryRequest(system: String? = nil, user: String, history: [Message]?) async throws -> URLRequest {
         let grokRequest = GrokRequest(userMessage: user, systemMessage: system, history: history)
         
+        guard let key = Settings.key, !key.isEmpty else { throw URLError(.zeroByteResource) }
         guard let url = URL(string: "https://api.x.ai/v1/chat/completions") else { throw URLError(.badURL) }
+        
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.httpBody = try JSONEncoder().encode(grokRequest)
         request.allHTTPHeaderFields = [
             "Content-Type": "application/json",
-            "Authorization": "Bearer \(jAPIKey)"
+            "Authorization": "Bearer \(key)"
         ]
         return request
     }
@@ -79,13 +78,15 @@ class GrokService {
     private func queryRequest(text: String, images: [UIImage]) async throws -> URLRequest {
         let grokRequest = GrokImageRequest(text: text, images: images)
         
+        guard let key = Settings.key, !key.isEmpty else { throw URLError(.zeroByteResource) }
         guard let url = URL(string: "https://api.x.ai/v1/chat/completions") else { throw URLError(.badURL) }
+        
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.httpBody = try JSONEncoder().encode(grokRequest)
         request.allHTTPHeaderFields = [
             "Content-Type": "application/json",
-            "Authorization": "Bearer \(jAPIKey)"
+            "Authorization": "Bearer \(key)"
         ]
         return request
     }

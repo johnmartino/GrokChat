@@ -95,9 +95,6 @@ struct InputField: View {
                     .ignoresSafeArea()
             }
         }
-        .onChange(of: message) {
-            focus = true
-        }
     }
     
     private var shouldShowFullField: Bool {
