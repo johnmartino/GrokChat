@@ -26,7 +26,7 @@ class GrokService {
         let (stream, _) = try await URLSession.shared.bytes(for: request)
         
         for try await line in stream.lines {
-            guard let message = try? parse(line) else { continue }
+            guard let message = try parse(line) else { continue }
             responseMessage += message
         }
         hapticGenerator.notificationOccurred(.success)
@@ -45,7 +45,7 @@ class GrokService {
         let (stream, _) = try await URLSession.shared.bytes(for: request)
         
         for try await line in stream.lines {
-            guard let message = try? parse(line) else { continue }
+            guard let message = try parse(line) else { continue }
             responseMessage += message
         }
         hapticGenerator.notificationOccurred(.success)
@@ -93,7 +93,12 @@ class GrokService {
     
     private func parse(_ line: String) throws -> String? {
         let components = line.split(separator: ":", maxSplits: 1, omittingEmptySubsequences: true)
-        guard components.count == 2, components[0] == "data" else { return nil }
+        guard components.count == 2, components[0] == "data" else {
+            if components.count == 2, components[0].contains("code") {
+                responseMessage = String(components[1])
+            }
+            return nil
+        }
         
         let message = components[1].trimmingCharacters(in: .whitespacesAndNewlines)
         

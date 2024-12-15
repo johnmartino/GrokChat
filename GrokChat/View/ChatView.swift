@@ -23,6 +23,9 @@ struct ChatView: View {
     @State private var showSettings = false
     @State private var showSettingsMessage = false
     
+    @State private var showErrorAlert = false
+    @State private var errorMessage: String?
+    
     var body: some View {
         NavigationStack {
             contentView
@@ -35,6 +38,14 @@ struct ChatView: View {
                     let keyValue = Settings.key ?? ""
                     let modelValue = Settings.model ?? ""
                     showSettingsMessage = keyValue.isEmpty || modelValue.isEmpty
+                }
+                .alert("Service Error", isPresented: $showErrorAlert) {
+                    Button("OK") {
+                        errorMessage = nil
+                        showErrorAlert = false
+                    }
+                } message: {
+                    Text(errorMessage ?? "An unknown error occurred.")
                 }
                 .toolbar {
                     ToolbarItem(placement: .topBarLeading) {
@@ -93,10 +104,15 @@ struct ChatView: View {
                 let generator = UINotificationFeedbackGenerator()
                 generator.notificationOccurred(.success)
                 
-                if images.isEmpty {
-                    try? await service.query(system: systemMessage, user: message, history: conversation.messages)
-                } else {
-                    try? await service.query(text: message, images: images)
+                do {
+                    if images.isEmpty {
+                        try await service.query(system: systemMessage, user: message, history: conversation.messages)
+                    } else {
+                        try await service.query(text: message, images: images)
+                    }
+                } catch {
+                    errorMessage = error.localizedDescription
+                    showErrorAlert = true
                 }
             }
         }
