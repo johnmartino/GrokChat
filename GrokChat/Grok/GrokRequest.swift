@@ -20,7 +20,7 @@ struct GrokRequest: Codable {
     let temperature: Double
     
     init(userMessage: String, systemMessage: String?, history: [Message]?) {
-        self.model = Settings.textModel // "grok-beta"
+        self.model = Settings.textModel 
         self.stream = true
         self.temperature = 0
         

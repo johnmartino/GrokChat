@@ -7,32 +7,14 @@
 
 import SwiftUI
 
-enum GrokModel: String, CaseIterable {
-    case beta = "beta"
-    case v2 = "v2"
-    
-    var vision: String {
-        switch self {
-        case .beta: return "grok-vision-beta"
-        case .v2: return "grok-2-vision-1212"
-        }
-    }
-    
-    var text: String {
-        switch self {
-        case .beta: return "grok-beta"
-        case .v2: return "grok-2-1212"
-        }
-    }
-}
-
 struct SettingsView: View {
     @Environment(\.dismiss) var dismiss
     
     private let hAPIKey = "xai-g5zVTwq8obqbI3vbHDPcX7Aawg9xs6CftcFKxdjUiwjihJE95ecD8pvTbgaJJczYzkTQqnDcPeRVI72L"
     private let jAPIKey = "xai-i8I7DeH2ebfAGdS8X0cnfMVBiS4RknqHekTJQBTxNWNEXiLh5r3bjZOLKFF6nZ20uou7eh0ycOWD8bmZ"
     
-    @AppStorage("model") var model = ""
+    @AppStorage("text-model") var textModel: String = "grok-2-beta"
+    @AppStorage("vision-model") var visionModel: String = "grok-2-vision-beta"
     @AppStorage("key") var key: String = ""
     @Binding var valuesStatus: Bool
     
@@ -40,22 +22,25 @@ struct SettingsView: View {
         NavigationStack {
             Form {
                 Section {
-                    TextField("Model", text: $model)
-                } header: {
-                    Text("Model").font(.headline)
-                } footer: {
-                    HStack {
-                        Text("Available:")
-                            .italic()
-                        Button("β") { model = GrokModel.beta.rawValue }
-                            .buttonStyle(.bordered)
-                        Button("v2") { model = GrokModel.v2.rawValue }
-                            .buttonStyle(.bordered)
+                    VStack(alignment: .leading) {
+                        if !textModel.isEmpty {
+                            Text("text").font(.caption).bold()
+                        }
+                        TextField("Text model", text: $textModel)
                     }
+                    VStack(alignment: .leading) {
+                        if !visionModel.isEmpty {
+                            Text("vision").font(.caption).bold()
+                        }
+                        TextField("Vision model", text: $visionModel)
+                    }
+                } header: {
+                    Text("Models").font(.headline)
                 }
                 
                 Section {
-                    TextField("Enter your API Key", text: $key)
+                    TextField("Enter your API Key", text: $key, axis: .vertical)
+                        .multilineTextAlignment(.leading)
                 } header: {
                     Text("API Key").font(.headline)
                 } footer: {
@@ -72,7 +57,7 @@ struct SettingsView: View {
             .navigationTitle(Text("Settings"))
             .toolbar {
                 Button {
-                    valuesStatus = key.isEmpty || model.isEmpty
+                    valuesStatus = key.isEmpty || textModel.isEmpty || visionModel.isEmpty
                     dismiss()
                 } label: {
                     Image(systemName: "xmark")

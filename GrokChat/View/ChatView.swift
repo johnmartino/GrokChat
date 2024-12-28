@@ -36,8 +36,7 @@ struct ChatView: View {
                 }
                 .task {
                     let keyValue = Settings.key ?? ""
-                    let modelValue = Settings.model ?? ""
-                    showSettingsMessage = keyValue.isEmpty || modelValue.isEmpty
+                    showSettingsMessage = keyValue.isEmpty || Settings.textModel.isEmpty || Settings.visionModel.isEmpty
                 }
                 .alert("Service Error", isPresented: $showErrorAlert) {
                     Button("OK") {

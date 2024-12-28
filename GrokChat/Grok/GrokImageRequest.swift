@@ -59,7 +59,7 @@ struct GrokImageRequest: Codable {
     let temperature: Double
 
     init(text: String, images: [UIImage], stream: Bool = true) {
-        self.model = Settings.visionModel //"grok-2-vision-1212"
+        self.model = Settings.visionModel 
         self.stream = stream
         self.temperature = 0.01
         self.messages = [GrokImageMessage(role: "user", text: text, images: images)]
