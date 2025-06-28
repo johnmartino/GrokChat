@@ -28,7 +28,7 @@ enum MessageType: Codable {
     
     @ViewBuilder var icon: Image? {
         if self == .system {
-            Image(.logo)
+            Image(systemName: "apple.intelligence")
         }
     }
     

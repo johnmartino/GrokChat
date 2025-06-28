@@ -10,18 +10,18 @@ import SwiftData
 
 struct ChatView: View {
     @Environment(\.modelContext) var context
-    @Bindable private var service = GrokService()
+    @Bindable private var service = AIService()
     @Bindable private var conversation = Conversation()
     @Query(sort: \Message.id) var messages: [Message]
     
     private let bottomID = UUID()
-    private let systemMessage = "You are Grok, my personal assistant."
     
     @State private var scrollID = UUID()
     @State private var pauseScrolling = false
     @State private var showDownButton = false
     @State private var showSettings = false
     @State private var showSettingsMessage = false
+    @State private var isQuerying = false
     
     @State private var showErrorAlert = false
     @State private var errorMessage: String?
@@ -37,6 +37,11 @@ struct ChatView: View {
                 .task {
                     let keyValue = Settings.key ?? ""
                     showSettingsMessage = keyValue.isEmpty || Settings.textModel.isEmpty || Settings.visionModel.isEmpty
+                }
+                .onChange(of: service.busy) { oldValue, newValue in
+                    if newValue != oldValue {
+                        isQuerying = newValue
+                    }
                 }
                 .alert("Service Error", isPresented: $showErrorAlert) {
                     Button("OK") {
@@ -96,7 +101,7 @@ struct ChatView: View {
     }
     
     private var inputField: some View {
-        InputField(isQuerying: $service.busy) { message, images in
+        InputField(isQuerying: $isQuerying) { message, images in
             Task {
                 guard !message.isEmpty else { return }
                 conversation.add(text: message, images: images, type: .user, context: context)
@@ -105,9 +110,9 @@ struct ChatView: View {
                 
                 do {
                     if images.isEmpty {
-                        try await service.query(system: systemMessage, user: message, history: conversation.messages)
+                        try await service.respond(to: message)
                     } else {
-                        try await service.query(text: message, images: images)
+//                        try await service.query(text: message, images: images)
                     }
                 } catch {
                     errorMessage = error.localizedDescription
@@ -122,10 +127,10 @@ struct ChatView: View {
             ScrollViewReader { reader in
                 ScrollView {
                     VStack {
-                        if conversation.messages.isEmpty && service.responseMessage.isEmpty {
+                        if conversation.messages.isEmpty && service.response.isEmpty {
                             HStack {
                                 Spacer()
-                                Image(.logo)
+                                Image(systemName: "apple.intelligence")
                                     .resizable()
                                     .renderingMode(.template)
                                     .foregroundStyle(.secondary)
@@ -143,8 +148,8 @@ struct ChatView: View {
                                     }
                             }
                             
-                            if !service.responseMessage.isEmpty {
-                                MessageView(message: Message(id: -1, text: service.responseMessage, images: nil, type: .system))
+                            if !service.response.isEmpty {
+                                MessageView(message: Message(id: -1, text: service.response, images: nil, type: .system))
                                     .frame(maxWidth: .infinity, alignment: .leading)
                             }
                             Rectangle()
@@ -162,7 +167,7 @@ struct ChatView: View {
                 }
                 .scrollIndicators(.hidden)
                 .scrollDismissesKeyboard(.immediately)
-                .onChange(of: service.responseMessage) {
+                .onChange(of: service.response) {
                     if !pauseScrolling {
                         reader.scrollTo(bottomID, anchor: .bottom)
                     }
@@ -175,9 +180,9 @@ struct ChatView: View {
                     }
                 }
                 .onChange(of: service.busy) {
-                    if !service.busy && !service.responseMessage.isEmpty {
-                        conversation.add(text: service.responseMessage, images: nil, type: .system, context: context)
-                        service.responseMessage = ""
+                    if !service.busy && !service.response.isEmpty {
+                        conversation.add(text: service.response, images: nil, type: .system, context: context)
+                        service.response = ""
                     }
                 }
                 .onTapGesture {

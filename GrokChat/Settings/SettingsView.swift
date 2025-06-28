@@ -13,6 +13,8 @@ struct SettingsView: View {
     private let hAPIKey = "xai-g5zVTwq8obqbI3vbHDPcX7Aawg9xs6CftcFKxdjUiwjihJE95ecD8pvTbgaJJczYzkTQqnDcPeRVI72L"
     private let jAPIKey = "xai-i8I7DeH2ebfAGdS8X0cnfMVBiS4RknqHekTJQBTxNWNEXiLh5r3bjZOLKFF6nZ20uou7eh0ycOWD8bmZ"
     
+    private let apiKey = "b6f47f53a99544898c9416dd2e6acb71"
+    
     @AppStorage("text-model") var textModel: String = "grok-2-beta"
     @AppStorage("vision-model") var visionModel: String = "grok-2-vision-beta"
     @AppStorage("key") var key: String = ""
@@ -50,6 +52,8 @@ struct SettingsView: View {
                         Button("H") { key = hAPIKey }
                             .buttonStyle(.bordered)
                         Button("J") { key = jAPIKey }
+                            .buttonStyle(.bordered)
+                        Button("Z") { key = apiKey }
                             .buttonStyle(.bordered)
                     }
                 }

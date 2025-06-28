@@ -7,14 +7,14 @@
 
 import SwiftUI
 
-@Observable
+@MainActor @Observable
 class GrokService {
     var responseMessage = ""
     var busy = false
     
     private let hapticGenerator = UINotificationFeedbackGenerator()
     
-    @MainActor func query(system: String? = nil, user: String, history: [Message]) async throws {
+    func query(system: String? = nil, user: String, history: [Message]) async throws {
         guard !busy else {
             hapticGenerator.notificationOccurred(.error)
             throw URLError(.callIsActive)
@@ -33,7 +33,7 @@ class GrokService {
         busy = false
     }
     
-    @MainActor func query(text: String, images: [UIImage]) async throws {
+    func query(text: String, images: [UIImage]) async throws {
         guard !busy else {
             hapticGenerator.notificationOccurred(.error)
             throw URLError(.callIsActive)
@@ -52,7 +52,7 @@ class GrokService {
         busy = false
     }
     
-    @MainActor func querySingle(text: String, images: [UIImage]) async throws {
+    func querySingle(text: String, images: [UIImage]) async throws {
         let request = try await queryRequest(text: text, images: images)
         let (data, _) = try await URLSession.shared.data(for: request)
         let json = try JSONDecoder().decode(GrokSingleResponse.self, from: data)
