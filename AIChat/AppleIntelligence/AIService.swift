@@ -11,9 +11,16 @@ import FoundationModels
 @MainActor @Observable
 class AIService {
     var response = ""
+    var specialMessage: String?
+    
     private var model = SystemLanguageModel.default
     private let options = GenerationOptions(sampling: .greedy, temperature: 2.0)
-    private let session = LanguageModelSession(instructions: "You are a my intelligent personal assistant.")
+    private let session: LanguageModelSession
+    
+    init() {
+        session = LanguageModelSession(instructions: "You are a my intelligent personal assistant.")
+        specialMessage = "[A new session has started]"
+    }
     
     func isAvailable() -> (Bool, String?) {
         switch model.availability {

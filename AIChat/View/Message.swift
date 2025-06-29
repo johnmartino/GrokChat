@@ -10,19 +10,20 @@ import SwiftData
 
 enum MessageType: Codable {
     case user
-    case system 
+    case system
+    case auto
     
     var backgroundColor: Color {
         switch self {
-        case .user: return Color(.systemGray5)
-        case .system: return .screen 
+            case .user: return Color(.systemGray5)
+            case .auto, .system: return .screen
         }
     }
     
     var alignment: Alignment {
         switch self {
-        case .user: return .trailing
-        case .system: return .leading
+            case .auto, .user: return .trailing
+            case .system: return .leading
         }
     }
     
@@ -34,8 +35,9 @@ enum MessageType: Codable {
     
     var value: String {
         switch self {
-        case .user: return "user"
-        case .system: return "assistant"
+            case .user: return "user"
+            case .system: return "assistant"
+            case .auto: return "auto"
         }
     }
 }

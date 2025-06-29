@@ -29,6 +29,12 @@ struct ChatView: View {
             contentView
                 .navigationBarTitleDisplayMode(.inline)
                 .background(.screen)
+                .task {
+                    if let last = conversation.messages.last, let specialMessage = service.specialMessage, last.text != specialMessage {
+                        conversation.add(text: specialMessage, images: nil, type: .auto, context: context)
+                        service.specialMessage = nil
+                    }
+                }
                 .onChange(of: service.busy) { oldValue, newValue in
                     if newValue != oldValue {
                         isQuerying = newValue
