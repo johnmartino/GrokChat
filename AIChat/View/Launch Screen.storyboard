@@ -16,17 +16,16 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" image="logo" translatesAutoresizingMaskIntoConstraints="NO" id="0Tn-Ks-sdR" userLabel="logo">
-                                <rect key="frame" x="0.0" y="-117.66666666666669" width="393" height="1137.3333333333333"/>
-                                <color key="backgroundColor" red="0.26051741839999998" green="0.2605243921" blue="0.260520637" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                <rect key="frame" x="16" y="-117.66666666666669" width="361" height="1137.3333333333333"/>
                             </imageView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="Bcu-3y-fUS"/>
-                        <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                        <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
-                            <constraint firstItem="0Tn-Ks-sdR" firstAttribute="centerX" secondItem="Bcu-3y-fUS" secondAttribute="centerX" id="38Z-RJ-4PZ"/>
-                            <constraint firstItem="0Tn-Ks-sdR" firstAttribute="centerY" secondItem="Bcu-3y-fUS" secondAttribute="centerY" id="5TC-YG-dUn"/>
-                            <constraint firstItem="Bcu-3y-fUS" firstAttribute="leading" secondItem="0Tn-Ks-sdR" secondAttribute="leading" id="Ivo-eI-VHT"/>
-                            <constraint firstItem="0Tn-Ks-sdR" firstAttribute="trailing" secondItem="Bcu-3y-fUS" secondAttribute="trailing" id="YVg-Lm-bJc"/>
+                            <constraint firstItem="0Tn-Ks-sdR" firstAttribute="leading" secondItem="Bcu-3y-fUS" secondAttribute="leading" constant="16" id="3Sw-fJ-JUL"/>
+                            <constraint firstItem="Bcu-3y-fUS" firstAttribute="trailing" secondItem="0Tn-Ks-sdR" secondAttribute="trailing" constant="16" id="nIi-Y8-8Ck"/>
+                            <constraint firstItem="0Tn-Ks-sdR" firstAttribute="centerX" secondItem="Bcu-3y-fUS" secondAttribute="centerX" id="vhM-2p-kv6"/>
+                            <constraint firstItem="0Tn-Ks-sdR" firstAttribute="centerY" secondItem="Bcu-3y-fUS" secondAttribute="centerY" id="zlw-e6-iDz"/>
                         </constraints>
                     </view>
                 </viewController>
