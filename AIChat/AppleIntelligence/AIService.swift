@@ -19,7 +19,7 @@ class AIService {
     
     init() {
         session = LanguageModelSession(instructions: "You are a my intelligent personal assistant.")
-        specialMessage = "[A new session has started]"
+        specialMessage = "A new session has started"
     }
     
     func isAvailable() -> (Bool, String?) {

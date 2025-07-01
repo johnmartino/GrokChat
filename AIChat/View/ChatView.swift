@@ -202,8 +202,9 @@ struct ChatView: View {
                         .imageScale(.small)
                         .font(.headline)
                         .tint(.primary)
+                        .padding()
+                        .glassEffect(.regular.interactive(), in: .circle)
                 }
-                .buttonStyle(.glass)
             }
             .padding(.bottom, 4)
         }

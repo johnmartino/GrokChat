@@ -62,10 +62,9 @@ struct InputField: View {
             }
             .disabled(isQuerying)
         }
-        .padding(12)
-        .background(Color(.systemGray6))
-        .clipShape(.rect(cornerRadius: 16))
+        .padding()
         .glassEffect()
+        .padding(.bottom)
         .disabled(isQuerying)
         .photosPicker(isPresented: $showImagePicker, selection: $photoItems, maxSelectionCount: 3, selectionBehavior: .default, matching: .images, preferredItemEncoding: .automatic, photoLibrary: .shared())
         .tint(.primary)
