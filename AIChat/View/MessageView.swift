@@ -18,19 +18,7 @@ struct MessageView: View {
     
     var body: some View {
         VStack(alignment: .trailing) {
-            HStack(alignment: .top) {
-                message.type.icon?
-                    .resizable()
-                    .renderingMode(.template)
-                    .foregroundStyle(.primary)
-                    .frame(width: 16, height: 16)
-                    .padding(8)
-                    .background {
-                        Circle()
-                            .stroke(lineWidth: 1)
-                            .foregroundStyle(.secondary)
-                    }
-                
+            Group {
                 if message.type == .auto {
                     Text(message.text)
                         .font(.callout)
@@ -48,7 +36,7 @@ struct MessageView: View {
             }
             .foregroundStyle(.primary)
             .padding(.horizontal, message.type == .system ? 0 : 16)
-            .padding(.vertical, 8)
+            .padding(.vertical, 12)
             .background {
                 message.type.backgroundColor
                     .clipShape(.rect(cornerRadius: radius))
