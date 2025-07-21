@@ -10,7 +10,7 @@ import SwiftData
 
 struct ChatView: View {
     @Environment(\.modelContext) var context
-    @Bindable private var service = AIService()
+    @StateObject private var service = AIService()
     @Bindable private var conversation = Conversation()
     @Query(sort: \Message.id) var messages: [Message]
     

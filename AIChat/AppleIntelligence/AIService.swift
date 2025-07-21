@@ -8,10 +8,10 @@
 import SwiftUI
 import FoundationModels
 
-@MainActor @Observable
-class AIService {
-    var response = ""
-    var specialMessage: String?
+@MainActor
+class AIService: ObservableObject {
+    @Published var response = ""
+    @Published var specialMessage: String?
     
     private var model = SystemLanguageModel.default
     private let options = GenerationOptions(sampling: .greedy, temperature: 2.0)
